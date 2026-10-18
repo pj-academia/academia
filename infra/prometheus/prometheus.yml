@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: backend
+    static_configs:
+      # A single target covers both modes: the native backend (mprocs) listens on host port 8010,
+      # and the containerized backend (--profile app) publishes the same port. Scraping it twice
+      # would double every metric.
+      - targets: ["host.docker.internal:8010"]

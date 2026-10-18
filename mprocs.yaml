@@ -1,0 +1,12 @@
+# Local development: infrastructure in containers, applications native with hot reload.
+# Run `mprocs` from the repository root.
+procs:
+  infra:
+    shell: "docker compose up"
+  backend:
+    # 0.0.0.0 so Prometheus can reach it from its container on Linux (host-gateway is not loopback).
+    shell: "uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8010"
+    cwd: "backend"
+  frontend:
+    shell: "pnpm dev"
+    cwd: "frontend"
