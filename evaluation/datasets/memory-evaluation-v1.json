@@ -1,0 +1,71 @@
+{
+  "version": "v1",
+  "purpose": "Manual evaluation cases for memory retrieval and personalized English tutoring.",
+  "cases": [
+    {
+      "id": "MEM-01",
+      "scenario": "Relevant difficulty",
+      "stored_memory": "The learner confuses present perfect and past simple.",
+      "query": "Can you explain when I should use present perfect?",
+      "expected_retrieval": true,
+      "expected_behavior": "Explain the contrast with past simple and provide simple examples."
+    },
+    {
+      "id": "MEM-02",
+      "scenario": "Relevant preference",
+      "stored_memory": "The learner prefers short explanations in Spanish followed by English examples.",
+      "query": "What is the difference between say and tell?",
+      "expected_retrieval": true,
+      "expected_behavior": "Use a concise Spanish explanation and English examples."
+    },
+    {
+      "id": "MEM-03",
+      "scenario": "Irrelevant memory",
+      "stored_memory": "The learner practiced vocabulary about travel last week.",
+      "query": "Help me understand the passive voice.",
+      "expected_retrieval": false,
+      "expected_behavior": "Do not force travel vocabulary into the passive voice explanation."
+    },
+    {
+      "id": "MEM-04",
+      "scenario": "Update instead of duplicate",
+      "stored_memory": "The learner prefers explanations in Spanish.",
+      "query": "From now on, explain in English unless I ask for Spanish.",
+      "expected_retrieval": true,
+      "expected_behavior": "Update the preference instead of creating a second active preference."
+    },
+    {
+      "id": "MEM-05",
+      "scenario": "No memory from trivial message",
+      "stored_memory": null,
+      "query": "Hi, how are you?",
+      "expected_retrieval": false,
+      "expected_behavior": "Respond politely but create no educational memory."
+    },
+    {
+      "id": "MEM-06",
+      "scenario": "Deleted memory",
+      "stored_memory": "The learner struggles with articles a, an and the.",
+      "query": "Can we practice articles?",
+      "memory_status": "deleted",
+      "expected_retrieval": false,
+      "expected_behavior": "Do not use or mention the deleted memory."
+    },
+    {
+      "id": "MEM-07",
+      "scenario": "Cross-user isolation",
+      "stored_memory": "Another learner is preparing for a job interview.",
+      "query": "Give me advice for my English interview.",
+      "expected_retrieval": false,
+      "expected_behavior": "Never retrieve a memory belonging to another user."
+    },
+    {
+      "id": "MEM-08",
+      "scenario": "Progress evidence",
+      "stored_memory": "The learner scored 4 out of 5 in a past simple exercise.",
+      "query": "What should I practice next?",
+      "expected_retrieval": true,
+      "expected_behavior": "Acknowledge the evidence and suggest a proportional next step."
+    }
+  ]
+}

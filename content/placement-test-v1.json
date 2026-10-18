@@ -1,0 +1,122 @@
+{
+  "version": "v1",
+  "purpose": "Initial English level estimate for Spanish-speaking learners. Not an official certification.",
+  "design_basis": "Original questions aligned with CEFR-oriented task types from Cambridge English and British Council references. They are not copied exam questions.",
+  "items": [
+    {
+      "id": "PT-01",
+      "target_band": "A1",
+      "skill": "grammar",
+      "question": "She ___ from Spain.",
+      "options": ["are", "is", "am", "be"],
+      "correct_option": 1,
+      "explanation_es": "Con she usamos el verbo to be en tercera persona: is."
+    },
+    {
+      "id": "PT-02",
+      "target_band": "A1",
+      "skill": "grammar",
+      "question": "I ___ coffee every morning.",
+      "options": ["drink", "drinks", "drinking", "drank"],
+      "correct_option": 0,
+      "explanation_es": "Con I, el presente simple usa la forma base: drink."
+    },
+    {
+      "id": "PT-03",
+      "target_band": "A1",
+      "skill": "vocabulary",
+      "question": "Choose the correct word: A book is usually on a ___.",
+      "options": ["shelf", "cloud", "shoe", "window"],
+      "correct_option": 0,
+      "explanation_es": "Shelf significa estantería."
+    },
+    {
+      "id": "PT-04",
+      "target_band": "A2",
+      "skill": "grammar",
+      "question": "Yesterday, we ___ to the cinema.",
+      "options": ["go", "gone", "went", "going"],
+      "correct_option": 2,
+      "explanation_es": "Yesterday indica pasado simple; el pasado de go es went."
+    },
+    {
+      "id": "PT-05",
+      "target_band": "A2",
+      "skill": "grammar",
+      "question": "I have lived here ___ 2023.",
+      "options": ["for", "since", "during", "from"],
+      "correct_option": 1,
+      "explanation_es": "Since se usa con el momento de inicio; for se usa con duración."
+    },
+    {
+      "id": "PT-06",
+      "target_band": "A2",
+      "skill": "comprehension",
+      "question": "'Could you repeat that, please?' means:",
+      "options": ["¿Puedes repetirlo, por favor?", "¿Puedes escribirlo?", "¿Dónde está, por favor?", "¿Puedes esperar fuera?"],
+      "correct_option": 0,
+      "explanation_es": "Repeat that significa repetir eso."
+    },
+    {
+      "id": "PT-07",
+      "target_band": "B1",
+      "skill": "grammar",
+      "question": "If I ___ more time, I would travel more.",
+      "options": ["have", "had", "will have", "would have"],
+      "correct_option": 1,
+      "explanation_es": "La segunda condicional usa pasado simple después de if: if I had."
+    },
+    {
+      "id": "PT-08",
+      "target_band": "B1",
+      "skill": "grammar",
+      "question": "I wish I ___ speak French better.",
+      "options": ["can", "could", "will", "must"],
+      "correct_option": 1,
+      "explanation_es": "I wish I could expresa un deseo sobre una habilidad actual."
+    },
+    {
+      "id": "PT-09",
+      "target_band": "B1",
+      "skill": "vocabulary",
+      "question": "Choose the closest meaning of 'reliable'.",
+      "options": ["easy to forget", "able to be trusted", "very expensive", "hard to understand"],
+      "correct_option": 1,
+      "explanation_es": "Reliable significa fiable o digno de confianza."
+    },
+    {
+      "id": "PT-10",
+      "target_band": "B2",
+      "skill": "grammar",
+      "question": "Hardly ___ the film started when the lights went out.",
+      "options": ["had", "has", "did", "was"],
+      "correct_option": 0,
+      "explanation_es": "Con hardly al inicio se usa inversión: Hardly had the film started."
+    },
+    {
+      "id": "PT-11",
+      "target_band": "B2",
+      "skill": "grammar",
+      "question": "I'd rather you ___ me tomorrow.",
+      "options": ["call", "called", "will call", "are calling"],
+      "correct_option": 1,
+      "explanation_es": "I'd rather + sujeto + pasado simple expresa preferencia sobre otra persona."
+    },
+    {
+      "id": "PT-12",
+      "target_band": "B2",
+      "skill": "vocabulary",
+      "question": "The new policy is intended to ___ waste.",
+      "options": ["reduce", "repeat", "replace", "remove"],
+      "correct_option": 0,
+      "explanation_es": "Reduce waste significa reducir residuos."
+    }
+  ],
+  "scoring": {
+    "0-3": "A1",
+    "4-6": "A2",
+    "7-9": "B1",
+    "10-12": "B2+",
+    "note": "The result is an initial estimate only. Later exercises and conversation evidence can update it."
+  }
+}
