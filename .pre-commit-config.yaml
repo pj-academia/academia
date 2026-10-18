@@ -1,0 +1,45 @@
+# Fast feedback only: format, lint and commit message. Tests run in CI, which is the real gate.
+default_install_hook_types: [pre-commit, commit-msg]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+
+  # Keep this rev in sync with the ruff version in backend/pyproject.toml.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.1
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  # Frontend tools run from frontend/, so they check the whole app instead of receiving paths.
+  - repo: local
+    hooks:
+      - id: frontend-prettier
+        name: prettier (frontend)
+        entry: pnpm --dir frontend exec prettier --write .
+        language: system
+        files: ^frontend/
+        pass_filenames: false
+      - id: frontend-eslint
+        name: eslint (frontend)
+        entry: pnpm --dir frontend lint
+        language: system
+        files: ^frontend/
+        pass_filenames: false
