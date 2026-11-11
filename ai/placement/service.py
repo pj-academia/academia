@@ -60,8 +60,6 @@ def public_test(test: Mapping[str, Any]) -> dict[str, Any]:
         "items": [
             {
                 "id": item["id"],
-                "target_band": item["target_band"],
-                "skill": item["skill"],
                 "question": item["question"],
                 "options": item["options"],
             }

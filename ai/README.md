@@ -1,11 +1,14 @@
 # Materiales de IA
 
-Estos archivos definen los contratos funcionales de la IA antes de conectar la aplicación con OpenAI. No contienen claves, llamadas a la API ni resultados generados.
+Este directorio contiene los prompts, contratos y módulos independientes de IA. El proveedor de embeddings permite conectar OpenAI desde el servidor; sus pruebas usan un cliente simulado y no necesitan claves ni llamadas de pago.
 
 ## Estructura
 
 - `prompts/`: prompts versionados para tutoría y extracción de memoria.
+- `embeddings/`: adaptador comprobable para generar vectores con OpenAI.
 - `memory/`: reglas de creación, actualización, recuperación y eliminación de memorias.
+
+El directorio `memory/` incluye también el núcleo ejecutable de recuperación y sus pruebas. Está separado de FastAPI y ChromaDB para poder verificar las reglas de aislamiento y relevancia antes de integrar servicios externos.
 
 Los prompts son una parte del producto y deben revisarse mediante pull request. Cualquier cambio que afecte la evaluación debe registrar su versión en los resultados.
 
