@@ -27,3 +27,7 @@ coverage/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local AI validation artifacts
+tmp/
+output/

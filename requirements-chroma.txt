@@ -1,0 +1,2 @@
+# Dependencia opcional para validar el adaptador con una colección real en memoria.
+chromadb==1.5.9

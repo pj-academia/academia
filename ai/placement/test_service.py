@@ -27,6 +27,8 @@ class PlacementServiceTests(unittest.TestCase):
         for item in exposed["items"]:
             self.assertNotIn("correct_option", item)
             self.assertNotIn("explanation_es", item)
+            self.assertNotIn("target_band", item)
+            self.assertNotIn("skill", item)
 
     def test_all_correct_answers_produce_b2_plus(self):
         result = evaluate_answers(self.test, self.correct_answers)

@@ -12,6 +12,9 @@ Este documento recoge contribuciones reales. No sustituye a los commits, pull re
 
 Añade una fila al completar una tarea importante.
 
+Los módulos de IA se trasladan desde `pj-academia/demo-repository`, commit `d934d10`, a la rama `codex/ai-memory-foundation` de este repositorio. Las filas siguientes conservan las tareas y validaciones del desarrollo original; las ramas indicadas pertenecen al repositorio de origen.
+
 | Fecha | Persona | Tarea | Rama / PR | Componentes | Pruebas o evidencia | Decisión relevante |
 | --- | --- | --- | --- | --- | --- | --- |
-| Pendiente | Pendiente | Pendiente | Pendiente | Pendiente | Pendiente | Pendiente |
+| 2026-11-11 | Antonio | Adaptador de memoria ChromaDB, con desarrollo asistido por Codex | `feat/chroma-memory-store` | `ai/memory/`, `requirements-chroma.txt` | 37 pruebas superadas, incluidas 4 con Chroma real en memoria; sin llamadas a OpenAI | IDs por propietario, filtros obligatorios y distancia coseno; coordinación con PostgreSQL pendiente. |
+| 2026-11-11 | Antonio | Servicio que une embeddings y recuperación, con demo local; desarrollo asistido por Codex | `feat/chroma-memory-store` | `ai/memory/service.py`, `ai/memory/demo.py` y pruebas | 48 pruebas superadas, incluidas 5 con Chroma real; demo ejecutada con vectores fijos | Consultas validadas antes del embedding, contexto JSON acotado y sin caché; integración con tutor y PostgreSQL pendiente. |

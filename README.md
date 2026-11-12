@@ -64,6 +64,21 @@ infra/       Configuración de Prometheus y Grafana
 docs/        Decisiones, plan y ADRs
 ```
 
+## Módulos de IA y demo de memoria
+
+`ai/` contiene el test diagnóstico de inglés, los prompts, el proveedor de embeddings y la recuperación de memorias por alumno. La [guía de memoria](ai/memory/README.md) incluye el contrato del servicio y una demo local con Chroma real y vectores simulados.
+
+Desde la raíz, en un entorno separado del backend:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-chroma.txt
+.\.venv\Scripts\python.exe -m unittest discover -s ai -t . -v
+.\.venv\Scripts\python.exe -m ai.memory.demo
+```
+
+La demo no necesita API key. Los módulos se mantienen independientes en `ai/`; su conexión a las capas hexagonales de `backend/app/memory/`, PostgreSQL y los endpoints se realizará en una tarea posterior siguiendo el ADR 0001. Las pruebas de IA se ejecutan con el comando anterior; el CI actual cubre los componentes del scaffold.
+
 ## Flujo de trabajo
 
 1. Cada tarea parte de un issue.
