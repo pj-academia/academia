@@ -7,6 +7,7 @@ Este directorio contiene los prompts, contratos y módulos independientes de IA.
 - `prompts/`: prompts versionados para tutoría y extracción de memoria.
 - `embeddings/`: adaptador comprobable para generar vectores con OpenAI.
 - `memory/`: reglas de creación, actualización, recuperación y eliminación de memorias.
+- `tutor/`: preparación de turnos que mantiene separadas las reglas, el contexto no confiable y la consulta del alumno.
 
 El directorio `memory/` incluye también el núcleo ejecutable de recuperación y sus pruebas. Está separado de FastAPI y ChromaDB para poder verificar las reglas de aislamiento y relevancia antes de integrar servicios externos.
 
