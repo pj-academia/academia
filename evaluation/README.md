@@ -25,6 +25,12 @@ Se conserva versión del prompt, modelo, configuración, latencia y uso de token
 
 Los objetivos son criterios de preparación, no resultados obtenidos.
 
+## Registro reproducible de cada ejecución
+
+`ai/evaluation/tutor_record.py` genera el contrato `tutor-turn-eval-v1`. Registra condición, caso, modelo, versión del prompt, IDs de las memorias recuperadas, latencia, tokens, negativa de seguridad, identificador de respuesta y una huella SHA-256 del resultado.
+
+Por defecto no guarda `user_id`, consulta, contenido de memorias ni texto de respuesta. El texto solo puede incluirse de forma explícita para el conjunto sintético revisado por el equipo. La condición `without_memory` rechaza cualquier ejecución que contenga memorias, evitando mezclar accidentalmente la línea base con el tratamiento.
+
 ## Casos de prueba
 
 El conjunto `datasets/memory-evaluation-v1.json` contiene casos positivos, negativos, de actualización y de eliminación. Antes de una evaluación real, se ampliará y revisará por los tres integrantes.
