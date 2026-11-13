@@ -1,6 +1,6 @@
 # Preparación de turnos del tutor
 
-`TutorTurnService` une el servicio de memoria con la futura llamada a OpenAI sin realizar todavía esa llamada. Recibe el alumno autenticado, el mensaje, el nivel estimado y sus preferencias; recupera solo su contexto y devuelve argumentos compatibles con `client.responses.create(**request)`.
+`TutorTurnService` une el servicio de memoria con la preparación de la llamada a OpenAI. Recibe el alumno autenticado, el mensaje, el nivel estimado y sus preferencias; recupera solo su contexto y devuelve argumentos compatibles con `client.responses.create(**request)`. `OpenAITutorResponder` ejecuta esos argumentos y devuelve un `TutorReply` con texto, identificador y métricas de tokens.
 
 La petición mantiene tres zonas separadas:
 
@@ -8,10 +8,10 @@ La petición mantiene tres zonas separadas:
 2. Primer elemento de `input`: nivel, preferencias y memoria en JSON etiquetado como datos no confiables.
 3. Segundo elemento de `input`: mensaje actual del alumno.
 
-El identificador del alumno, los vectores y la similitud no se envían al modelo. La opción `store` se fija a `False`; la aplicación conservará el historial que necesite en sus propios sistemas. La respuesta todavía no se genera y no se necesita API key para probar este módulo.
+El identificador del alumno, los vectores y la similitud no se envían al modelo. La opción `store` se fija a `False`; la aplicación conservará el historial que necesite en sus propios sistemas. Las pruebas usan un cliente simulado, por lo que no necesitan API key ni consumen créditos.
 
 ```python
-from ai.tutor import TutorTurnService
+from ai.tutor import OpenAITutorResponder, TutorTurnService
 
 tutor = TutorTurnService(memory_context_service, model=configured_chat_model)
 request = tutor.prepare(
@@ -20,8 +20,11 @@ request = tutor.prepare(
     estimated_level="B1",
     preferences=("Ejemplos breves",),
 )
-# Futuro paso del backend, no ejecutado por este módulo:
-# response = openai_client.responses.create(**request)
+responder = OpenAITutorResponder(openai_client)
+reply = responder.generate(request)
+print(reply.text)
 ```
 
-La estructura sigue la [referencia oficial de Responses](https://developers.openai.com/api/reference/resources/responses/methods/create): `instructions` se interpreta como guía de desarrollador y `input` admite mensajes con rol. Antes de la integración real faltan seleccionar el modelo de chat, conectar el cliente en el backend y probar el recorrido con una clave configurada únicamente en el servidor.
+La estructura sigue la [referencia oficial de Responses para Python](https://developers.openai.com/api/reference/python/resources/responses/methods/create): `instructions` se interpreta como guía de desarrollador, `input` admite mensajes con rol y el SDK proporciona `output_text`. El adaptador exige estado `completed` e identificador de respuesta; acepta texto no vacío o una negativa de seguridad válida, que marca con `reply.refused`. Si existen métricas, valida que sean contadores no negativos. Los errores del SDK se propagan y el backend decidirá cómo registrarlos o traducirlos sin guardar el prompt.
+
+Antes de una ejecución real faltan seleccionar el modelo de chat, añadir la dependencia oficial al entorno del backend y configurar `OPENAI_API_KEY` únicamente en el servidor. Ese recorrido real se probará de forma controlada cuando el equipo confirme la cuenta y el presupuesto.
