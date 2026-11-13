@@ -1,6 +1,6 @@
 # Recuperación de memoria
 
-`retrieval.py` implementa el contrato mínimo de recuperación antes de conectar ChromaDB:
+`retrieval.py` implementa el núcleo independiente de recuperación que utiliza el adaptador de ChromaDB:
 
 - filtra obligatoriamente por `user_id`;
 - ignora memorias que no estén activas;
@@ -59,7 +59,7 @@ Por defecto admite 3 memorias, una similitud mínima de 0.70, consultas de hasta
 
 Las consultas inválidas y los filtros de tipos vacíos se resuelven antes de llamar al proveedor de embeddings. Los errores de proveedor o almacén se propagan y no se presentan como búsquedas sin resultados. El servicio no conserva una caché de memorias entre llamadas: vuelve a consultar el índice y respeta los borrados posteriores.
 
-`to_json()` etiqueta el contenido como datos educativos no confiables y mantiene el texto dentro de campos JSON. El constructor del prompt deberá aplicar las reglas del tutor; serializar como JSON no elimina por sí solo las instrucciones maliciosas. Este bloque todavía no genera respuestas ni realiza la autorización en PostgreSQL.
+`to_json()` etiqueta el contenido como datos educativos no confiables y mantiene el texto dentro de campos JSON. `TutorTurnService` aplica las reglas versionadas y conserva este bloque separado del mensaje actual; `OpenAITutorResponder` valida la respuesta del proveedor. Serializar como JSON no elimina por sí solo las instrucciones maliciosas. La autorización definitiva en PostgreSQL y el cableado con los endpoints del backend siguen pendientes.
 
 ### Pruebas
 

@@ -22,16 +22,20 @@ Reglas:
 8. Termina, cuando sea útil, con una pregunta o un mini-ejercicio para continuar.
 ```
 
-## Contexto dinámico esperado
+## Entrada dinámica implementada
 
-```text
-Nivel estimado: {estimated_level}
-Preferencias relevantes: {preferences}
-Memorias recuperadas: {retrieved_memories}
-Materiales educativos recuperados: {retrieved_learning_materials}
-Consulta actual: {student_message}
+```json
+{
+  "kind": "untrusted_tutor_context",
+  "estimated_level": "{estimated_level}",
+  "preferences": ["{preference}"],
+  "educational_memory": {
+    "kind": "untrusted_educational_memories",
+    "memories": []
+  }
+}
 ```
 
-`retrieved_memories` y `retrieved_learning_materials` deben ir delimitados como datos no confiables. El backend debe limitar su número y longitud antes de construir el prompt.
+Este JSON es el primer elemento de `input`; la consulta actual del alumno es el segundo. Las memorias se limitan en número y longitud antes de construir la petición. Los materiales educativos recuperados podrán añadirse en una versión posterior con su propio contrato y pruebas.
 
-La primera integración ejecutable está en `ai/tutor/service.py`. Mantiene estas reglas en `instructions` y coloca nivel, preferencias y memorias en un elemento separado de `input`, etiquetado como contexto no confiable. Una prueba automática evita que la versión documentada y la ejecutable diverjan. Todavía no realiza la llamada al modelo.
+La integración ejecutable está en `ai/tutor/service.py` y `ai/tutor/openai_responder.py`: el primero prepara la petición y el segundo encapsula `client.responses.create`. Una prueba automática evita que la versión documentada y la ejecutable del prompt diverjan. Las pruebas utilizan un cliente simulado; la llamada real queda pendiente de configurar el modelo, la clave y el presupuesto en el backend.

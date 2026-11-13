@@ -11,7 +11,7 @@ La misma consulta se ejecuta en dos condiciones:
 1. **Sin memoria:** perfil mínimo y consulta actual.
 2. **Con memoria:** mismo perfil, consulta y memorias relevantes recuperadas.
 
-Se conserva versión del prompt, modelo, configuración, latencia y uso de tokens para cada ejecución.
+Se conserva versión del prompt, modelo, latencia y uso de tokens para cada ejecución. La evaluación real deberá registrar también la configuración de recuperación (`top_k`, umbral, modelo y dimensión de embeddings) para que la comparación sea completamente reproducible.
 
 ## Métricas propuestas
 
@@ -33,4 +33,4 @@ Por defecto no guarda `user_id`, consulta, contenido de memorias ni texto de res
 
 ## Casos de prueba
 
-El conjunto `datasets/memory-evaluation-v1.json` contiene casos positivos, negativos, de actualización y de eliminación. Antes de una evaluación real, se ampliará y revisará por los tres integrantes.
+El conjunto `datasets/memory-evaluation-v1.json` contiene casos positivos, negativos, de actualización y de eliminación. Actualmente es un conjunto manual: todavía falta el ejecutor que lance cada caso en ambas condiciones y aplique la rúbrica humana. Antes de esa evaluación real, se ampliará y revisará por los tres integrantes.
