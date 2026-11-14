@@ -37,6 +37,12 @@ store.delete_memory("memory-1", user_id=authenticated_user_id)
 
 El backend debe obtener `authenticated_user_id` de la sesión, comprobar la propiedad en PostgreSQL y conservar allí fuente, fechas y confianza. Tras un borrado registrará la fuente bloqueada para evitar recrear automáticamente la memoria desde el mismo mensaje. Esa coordinación con PostgreSQL queda pendiente de la integración de Peio; el adaptador solo modifica el índice vectorial.
 
+## Extracción y validación
+
+`extraction.py` valida las propuestas generadas con `memory-extraction-v2`. Admite `create`, `update` y `discard`, exige confianza mínima de 0.70 y rechaza campos desconocidos, tipos inválidos, IDs de actualización inexistentes y cambios de tipo. Una creación idéntica a una memoria activa se convierte en actualización para evitar duplicados.
+
+El servicio recibe únicamente memorias activas ya autorizadas por el backend. Si PostgreSQL indica que el mensaje de origen está bloqueado después de un borrado, devuelve `discard` sin llamar al modelo. Este módulo no persiste datos y sus pruebas utilizan un generador simulado.
+
 Cada colección debe usar un único modelo y dimensión de embeddings. Si se cambia el modelo, se crea otra colección y se reindexa; no deben mezclarse vectores de modelos distintos aunque tengan igual dimensión. La búsqueda de Chroma es aproximada: el umbral y los resultados se calibrarán con el conjunto de evaluación.
 
 ## Verificación
