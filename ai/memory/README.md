@@ -104,3 +104,21 @@ Desde la terminal integrada de VS Code, con las dependencias opcionales instalad
 ```
 
 La demo guarda ejemplos de dos alumnos, abre otra instancia del servicio, consulta la dificultad del primero, la borra y vuelve a consultar. La memoria del segundo se conserva. Chroma funciona realmente en memoria; el proveedor utiliza vectores fijos y solo admite los textos de ejemplo. Esto permite comprobar el recorrido y el aislamiento sin API key. No evalúa la calidad semántica de OpenAI ni la personalización del tutor. Los datos desaparecen al terminar la ejecución.
+
+### Demo de extracción sin dependencias externas
+
+Para mostrar al equipo las reglas de creación y actualización desde la raíz del repositorio:
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m ai.memory.extraction_demo
+```
+
+Recorre siete escenarios con propuestas guionizadas: crear una dificultad, repetirla sin duplicarla, crear una preferencia, cambiarla, descartar un saludo, rechazar una confianza insuficiente y descartar una fuente bloqueada después de un borrado simulado. Utiliza el adaptador de extracción y el validador reales con un cliente local. El estado y la señal de bloqueo son simulados; PostgreSQL, autorización y coordinación de borrados siguen pendientes del backend.
+
+La salida muestra el número de memorias y las llamadas simuladas por paso. Termina con una sola preferencia actualizada; el último paso no llama al generador. Todas las propuestas y datos son sintéticos y desaparecen al terminar. La demo funciona con la biblioteca estándar de Python, sin instalar OpenAI ni Chroma, y no mide la calidad del modelo.
+
+El mismo recorrido se puede consultar como JSON, con las decisiones y el estado de cada paso:
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m ai.memory.extraction_demo --json
+```
