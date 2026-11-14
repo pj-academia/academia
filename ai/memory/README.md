@@ -45,6 +45,8 @@ El servicio recibe únicamente memorias activas ya autorizadas por el backend. S
 
 `extraction-evaluation-cases-v1.json` aporta ocho casos sintéticos y sin datos personales para medir acciones, tipos, destino y términos esenciales. `extraction_evaluation.py` genera un informe con exactitud de acción, exactitud completa y fallos por caso; posteriormente podrá ejecutarse con el adaptador real de OpenAI.
 
+`openai_extractor.py` implementa ese adaptador mediante Responses API y salida estructurada con JSON Schema estricto. Envía las memorias autorizadas como datos no confiables, desactiva `store` y deja la validación y decisión final en `MemoryExtractionService`. El modelo se configurará con `OPENAI_MEMORY_MODEL`; la clave queda exclusivamente en `OPENAI_API_KEY`, leída por el SDK oficial.
+
 Cada colección debe usar un único modelo y dimensión de embeddings. Si se cambia el modelo, se crea otra colección y se reindexa; no deben mezclarse vectores de modelos distintos aunque tengan igual dimensión. La búsqueda de Chroma es aproximada: el umbral y los resultados se calibrarán con el conjunto de evaluación.
 
 ## Verificación

@@ -10,6 +10,10 @@ from ai.memory.extraction import (
     MemoryExtractionService,
     parse_memory_extraction,
 )
+from ai.memory.openai_extractor import (
+    MemoryExtractionProviderError,
+    OpenAIMemoryExtractionGenerator,
+)
 from ai.memory.retrieval import MemoryRecord, RetrievedMemory, retrieve_memories
 from ai.memory.service import (
     MemoryContext,
@@ -27,7 +31,9 @@ __all__ = [
     "MemoryExtractionDecision",
     "MemoryExtractionError",
     "MemoryExtractionGenerator",
+    "MemoryExtractionProviderError",
     "MemoryExtractionService",
+    "OpenAIMemoryExtractionGenerator",
     "MemoryRecord",
     "MemoryContext",
     "MemoryContextError",
