@@ -43,6 +43,8 @@ El backend debe obtener `authenticated_user_id` de la sesión, comprobar la prop
 
 El servicio recibe únicamente memorias activas ya autorizadas por el backend. Si PostgreSQL indica que el mensaje de origen está bloqueado después de un borrado, devuelve `discard` sin llamar al modelo. Este módulo no persiste datos y sus pruebas utilizan un generador simulado.
 
+`extraction-evaluation-cases-v1.json` aporta ocho casos sintéticos y sin datos personales para medir acciones, tipos, destino y términos esenciales. `extraction_evaluation.py` genera un informe con exactitud de acción, exactitud completa y fallos por caso; posteriormente podrá ejecutarse con el adaptador real de OpenAI.
+
 Cada colección debe usar un único modelo y dimensión de embeddings. Si se cambia el modelo, se crea otra colección y se reindexa; no deben mezclarse vectores de modelos distintos aunque tengan igual dimensión. La búsqueda de Chroma es aproximada: el umbral y los resultados se calibrarán con el conjunto de evaluación.
 
 ## Verificación

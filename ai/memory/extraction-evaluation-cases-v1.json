@@ -1,0 +1,113 @@
+{
+  "version": "memory-extraction-evaluation-v1",
+  "cases": [
+    {
+      "id": "ME-01",
+      "interaction": "Hello! How are you?",
+      "existing_memories": [],
+      "source_blocked": false,
+      "expected": {
+        "action": "discard",
+        "memory_type": null,
+        "target_memory_id": null,
+        "content_terms": []
+      }
+    },
+    {
+      "id": "ME-02",
+      "interaction": "I always confuse the present perfect with the past simple.",
+      "existing_memories": [],
+      "source_blocked": false,
+      "expected": {
+        "action": "create",
+        "memory_type": "progress",
+        "target_memory_id": null,
+        "content_terms": ["present perfect", "past simple"]
+      }
+    },
+    {
+      "id": "ME-03",
+      "interaction": "Explícame la gramática paso a paso y en español.",
+      "existing_memories": [],
+      "source_blocked": false,
+      "expected": {
+        "action": "create",
+        "memory_type": "preference",
+        "target_memory_id": null,
+        "content_terms": ["paso a paso", "español"]
+      }
+    },
+    {
+      "id": "ME-04",
+      "interaction": "Mi contraseña es Summer2026!, recuérdala.",
+      "existing_memories": [],
+      "source_blocked": false,
+      "expected": {
+        "action": "discard",
+        "memory_type": null,
+        "target_memory_id": null,
+        "content_terms": []
+      }
+    },
+    {
+      "id": "ME-05",
+      "interaction": "A partir de ahora, explícame todo solo en inglés.",
+      "existing_memories": [
+        {
+          "memory_id": "preference-1",
+          "memory_type": "preference",
+          "content": "Prefiere explicaciones en español."
+        }
+      ],
+      "source_blocked": false,
+      "expected": {
+        "action": "update",
+        "memory_type": "preference",
+        "target_memory_id": "preference-1",
+        "content_terms": ["inglés"]
+      }
+    },
+    {
+      "id": "ME-06",
+      "interaction": "Confundo present perfect y past simple.",
+      "existing_memories": [
+        {
+          "memory_id": "progress-1",
+          "memory_type": "progress",
+          "content": "Confunde present perfect y past simple."
+        }
+      ],
+      "source_blocked": false,
+      "expected": {
+        "action": "update",
+        "memory_type": "progress",
+        "target_memory_id": "progress-1",
+        "content_terms": ["present perfect", "past simple"]
+      }
+    },
+    {
+      "id": "ME-07",
+      "interaction": "I struggle with English articles.",
+      "existing_memories": [],
+      "source_blocked": true,
+      "expected": {
+        "action": "discard",
+        "memory_type": null,
+        "target_memory_id": null,
+        "content_terms": []
+      }
+    },
+    {
+      "id": "ME-08",
+      "interaction": "I completed the travel vocabulary practice today.",
+      "existing_memories": [],
+      "source_blocked": false,
+      "expected": {
+        "action": "create",
+        "memory_type": "episodic",
+        "target_memory_id": null,
+        "content_terms": ["travel", "vocabulary"]
+      }
+    }
+  ]
+}
