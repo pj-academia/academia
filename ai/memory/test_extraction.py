@@ -119,6 +119,14 @@ class MemoryExtractionParsingTests(unittest.TestCase):
                 with self.assertRaises(MemoryExtractionError):
                     parse_memory_extraction(invalid)
 
+    def test_extreme_confidence_values_raise_controlled_validation_errors(self):
+        for confidence in (10**400, -(10**400), float("inf"), float("-inf")):
+            with self.subTest(confidence=confidence):
+                invalid = proposal(confidence=confidence)
+                for raw in (invalid, json.dumps(invalid)):
+                    with self.assertRaisesRegex(MemoryExtractionError, "confidence"):
+                        parse_memory_extraction(raw)
+
 
 class MemoryExtractionServiceTests(unittest.TestCase):
     def setUp(self):
@@ -225,6 +233,17 @@ class MemoryExtractionServiceTests(unittest.TestCase):
             with self.subTest(options=options):
                 with self.assertRaises(ValueError):
                     MemoryExtractionService(self.generator, **options)
+
+    def test_duplicate_ids_are_rejected_within_the_memory_count_limit(self):
+        memories = [
+            ExistingMemory("same", "progress", "First difficulty."),
+            ExistingMemory(" same ", "progress", "Second difficulty."),
+        ]
+
+        with self.assertRaisesRegex(ValueError, "IDs duplicados"):
+            self.service.propose("New evidence", existing_memories=memories)
+
+        self.generator.generate.assert_not_called()
 
 
 if __name__ == "__main__":

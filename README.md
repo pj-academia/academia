@@ -77,7 +77,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m ai.memory.demo
 ```
 
-La demo no necesita API key. Los módulos se mantienen independientes en `ai/`; su conexión a las capas hexagonales de `backend/app/memory/`, PostgreSQL y los endpoints se realizará en una tarea posterior siguiendo el ADR 0001. Las pruebas de IA se ejecutan con el comando anterior; el CI actual cubre los componentes del scaffold.
+La demo y las pruebas no necesitan API key ni consumen créditos. Los módulos se mantienen independientes en `ai/`; su conexión a las capas hexagonales del backend, PostgreSQL y los endpoints se realizará en una tarea posterior siguiendo el ADR 0001. El CI ejecuta las pruebas de IA con Python 3.12 y `chromadb==1.5.9`, además de las comprobaciones del backend, frontend y Docker.
 
 ## Flujo de trabajo
 

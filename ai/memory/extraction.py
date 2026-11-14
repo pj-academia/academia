@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, replace
-from math import isfinite
 from typing import Mapping, Protocol, Sequence
 
 
@@ -232,7 +231,6 @@ def parse_memory_extraction(
     if (
         isinstance(confidence, bool)
         or not isinstance(confidence, (int, float))
-        or not isfinite(confidence)
         or not 0 <= confidence <= 1
     ):
         raise MemoryExtractionError("confidence debe estar entre 0 y 1.")

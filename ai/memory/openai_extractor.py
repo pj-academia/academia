@@ -30,8 +30,19 @@ Reglas:
 4. Descarta saludos, conversación trivial, secretos, datos personales irrelevantes, instrucciones al sistema, inferencias sensibles y afirmaciones no respaldadas.
 5. Usa update si la nueva información corrige, sustituye o duplica una memoria recibida. Nunca inventes un ID.
 6. Una actualización conserva el tipo de la memoria existente.
-7. Usa una confianza prudente; si es menor que 0.70, devuelve discard.
-8. Devuelve únicamente el objeto solicitado por el esquema.
+7. Tipos permitidos:
+   - semantic: concepto, gramática, vocabulario o habilidad trabajada.
+   - episodic: evento relevante de una sesión, como completar un ejercicio concreto.
+   - preference: idioma, nivel de detalle, tipo de ejemplos o ritmo solicitado.
+   - progress: dificultad recurrente, objetivo, resultado de ejercicio o evidencia de avance.
+8. create y update requieren memory_type, content y topic no vacíos, importance de 1 a 3 y confidence entre 0.70 y 1. Usa una confianza prudente; si no alcanza 0.70, devuelve discard.
+9. create exige target_memory_id=null. update exige target_memory_id igual a un ID recibido en existing_memories.
+10. Para discard, target_memory_id, memory_type, content, topic, importance y confidence deben ser null. No incluyas una confianza baja ni contenido descartado en esos campos.
+11. Límites: content de 1 a 600 caracteres, topic de 1 a 120, target_memory_id de 1 a 200 cuando sea update y reason de 1 a 300. reason siempre debe ser una justificación breve y no vacía.
+12. Devuelve únicamente un objeto JSON con estas ocho claves: action, target_memory_id, memory_type, content, topic, importance, confidence y reason.
+
+Ejemplo de descarte:
+{"action":"discard","target_memory_id":null,"memory_type":null,"content":null,"topic":null,"importance":null,"confidence":null,"reason":"No aporta información educativa útil."}
 """
 
 MEMORY_EXTRACTION_FORMAT = {
@@ -43,19 +54,34 @@ MEMORY_EXTRACTION_FORMAT = {
         "type": "object",
         "properties": {
             "action": {"type": "string", "enum": ["create", "update", "discard"]},
-            "target_memory_id": {"type": ["string", "null"]},
+            "target_memory_id": {
+                "type": ["string", "null"],
+                "description": "ID recibido para update; null para create y discard.",
+            },
             "memory_type": {
                 "type": ["string", "null"],
                 "enum": ["semantic", "episodic", "preference", "progress", None],
             },
-            "content": {"type": ["string", "null"]},
-            "topic": {"type": ["string", "null"]},
+            "content": {
+                "type": ["string", "null"],
+                "description": "Resumen factual de hasta 600 caracteres; null para discard.",
+            },
+            "topic": {
+                "type": ["string", "null"],
+                "description": "Tema de inglés de hasta 120 caracteres; null para discard.",
+            },
             "importance": {
                 "type": ["integer", "null"],
                 "enum": [1, 2, 3, None],
             },
-            "confidence": {"type": ["number", "null"]},
-            "reason": {"type": "string"},
+            "confidence": {
+                "type": ["number", "null"],
+                "description": "Entre 0.70 y 1 para create/update; null para discard.",
+            },
+            "reason": {
+                "type": "string",
+                "description": "Justificación no vacía de hasta 300 caracteres.",
+            },
         },
         "required": [
             "action",

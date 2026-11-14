@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from ai.memory.extraction import (
     MEMORY_ACTIONS,
     MEMORY_TYPES,
     ExistingMemory,
+    MemoryExtractionDecision,
     MemoryExtractionService,
 )
 
@@ -35,12 +37,27 @@ class MemoryExtractionCase:
     expected: ExpectedMemory
 
 
+MemoryContentReviewer = Callable[
+    [MemoryExtractionCase, MemoryExtractionDecision], bool | None
+]
+
+
 @dataclass(frozen=True)
 class MemoryExtractionEvaluationReport:
+    """Métricas automáticas de estructura, sin afirmar fidelidad semántica.
+
+    ``field_term_matches`` solo cuenta coincidencias de acción, tipo, destino
+    y palabras clave. Todo contenido creado o actualizado requiere una
+    revisión de significado, incluso cuando esos campos coinciden.
+    """
+
     version: str
     total_cases: int
     action_matches: int
-    exact_matches: int
+    field_term_matches: int
+    pending_content_review: tuple[str, ...]
+    accepted_content_reviews: tuple[str, ...]
+    rejected_content_reviews: tuple[str, ...]
     failures: tuple[str, ...]
 
     @property
@@ -48,8 +65,8 @@ class MemoryExtractionEvaluationReport:
         return self.action_matches / self.total_cases
 
     @property
-    def exact_accuracy(self) -> float:
-        return self.exact_matches / self.total_cases
+    def field_term_accuracy(self) -> float:
+        return self.field_term_matches / self.total_cases
 
 
 def load_memory_extraction_cases(
@@ -83,13 +100,22 @@ def evaluate_memory_extraction(
     cases: tuple[MemoryExtractionCase, ...],
     *,
     version: str,
+    content_reviewer: MemoryContentReviewer | None = None,
 ) -> MemoryExtractionEvaluationReport:
-    """Ejecuta casos sin detener el informe si uno produce un error."""
+    """Comprueba campos y términos y, opcionalmente, solicita revisión de contenido.
+
+    El revisor recibe el caso y la decisión de esta ejecución. Devuelve True
+    si el recuerdo es fiel, False si lo contradice o None si queda pendiente.
+    Sin revisor nunca se afirma que el contenido generado sea correcto.
+    """
     if not cases:
         raise MemoryExtractionEvaluationError("No hay casos que evaluar.")
     version = _required_text(version, "version")
     action_matches = 0
-    exact_matches = 0
+    field_term_matches = 0
+    pending_content_review: list[str] = []
+    accepted_content_reviews: list[str] = []
+    rejected_content_reviews: list[str] = []
     failures: list[str] = []
 
     for case in cases:
@@ -107,22 +133,42 @@ def evaluate_memory_extraction(
         if action_match:
             action_matches += 1
         content = (decision.content or "").casefold()
-        exact_match = (
+        field_term_match = (
             action_match
             and decision.memory_type == case.expected.memory_type
             and decision.target_memory_id == case.expected.target_memory_id
             and all(term.casefold() in content for term in case.expected.content_terms)
         )
-        if exact_match:
-            exact_matches += 1
+        if field_term_match:
+            field_term_matches += 1
         else:
             failures.append(f"{case.case_id}: resultado distinto del esperado")
+
+        if decision.action in {"create", "update"}:
+            try:
+                review = content_reviewer(case, decision) if content_reviewer else None
+                if review is not None and type(review) is not bool:
+                    raise ValueError("El revisor debe devolver True, False o None.")
+            except Exception as error:
+                pending_content_review.append(case.case_id)
+                failures.append(f"{case.case_id}: revisión {type(error).__name__}")
+                continue
+            if review is None:
+                pending_content_review.append(case.case_id)
+            elif review:
+                accepted_content_reviews.append(case.case_id)
+            else:
+                rejected_content_reviews.append(case.case_id)
+                failures.append(f"{case.case_id}: contenido no fiel a la interacción")
 
     return MemoryExtractionEvaluationReport(
         version=version,
         total_cases=len(cases),
         action_matches=action_matches,
-        exact_matches=exact_matches,
+        field_term_matches=field_term_matches,
+        pending_content_review=tuple(pending_content_review),
+        accepted_content_reviews=tuple(accepted_content_reviews),
+        rejected_content_reviews=tuple(rejected_content_reviews),
         failures=tuple(failures),
     )
 
@@ -151,7 +197,9 @@ def _parse_case(raw_case: object) -> MemoryExtractionCase:
     if len(memory_ids) != len(set(memory_ids)):
         raise MemoryExtractionEvaluationError("Un caso contiene memorias duplicadas.")
 
-    expected = _parse_expected(raw_case["expected"], set(memory_ids))
+    expected = _parse_expected(
+        raw_case["expected"], {memory.memory_id: memory for memory in memories}
+    )
     if raw_case["source_blocked"] and expected.action != "discard":
         raise MemoryExtractionEvaluationError(
             "Una fuente bloqueada solo puede esperar discard."
@@ -179,7 +227,9 @@ def _parse_existing_memory(raw_memory: object) -> ExistingMemory:
     )
 
 
-def _parse_expected(raw_expected: object, existing_ids: set[str]) -> ExpectedMemory:
+def _parse_expected(
+    raw_expected: object, existing_memories: dict[str, ExistingMemory]
+) -> ExpectedMemory:
     fields = {"action", "memory_type", "target_memory_id", "content_terms"}
     if not isinstance(raw_expected, dict) or set(raw_expected) != fields:
         raise MemoryExtractionEvaluationError("El resultado esperado es inválido.")
@@ -209,10 +259,17 @@ def _parse_expected(raw_expected: object, existing_ids: set[str]) -> ExpectedMem
             )
         if action == "create" and target is not None:
             raise MemoryExtractionEvaluationError("create no puede esperar un destino.")
-        if action == "update" and target not in existing_ids:
-            raise MemoryExtractionEvaluationError(
-                "update debe apuntar a una memoria existente del caso."
-            )
+        if action == "update":
+            target = _required_text(target, "target_memory_id")
+            existing = existing_memories.get(target)
+            if existing is None:
+                raise MemoryExtractionEvaluationError(
+                    "update debe apuntar a una memoria existente del caso."
+                )
+            if existing.memory_type != memory_type:
+                raise MemoryExtractionEvaluationError(
+                    "update debe conservar el tipo de la memoria destino."
+                )
 
     return ExpectedMemory(
         action=action,
