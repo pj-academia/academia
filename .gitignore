@@ -5,6 +5,7 @@
 
 # Private source documents (course brief and internal meeting notes)
 *.pdf
+!docs/avances-ia-2026-11-15.pdf
 
 # Python
 .venv/

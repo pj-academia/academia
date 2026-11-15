@@ -1,6 +1,6 @@
 # Academia IA
 
-Tutor de tecnología basado en IA generativa que recuerda las dificultades y preferencias de cada alumno entre sesiones para adaptar sus explicaciones. Proyecto Júpiter (TFM) del Máster en IA, Cloud Computing y DevOps.
+Tutor de inglés basado en IA generativa para estudiantes hispanohablantes. Recuerda dificultades, preferencias y progreso educativo entre sesiones para adaptar sus explicaciones. Proyecto Júpiter (TFM) del Máster en IA, Cloud Computing y DevOps.
 
 > Las decisiones técnicas y su justificación están en [`docs/decisiones-y-plan.md`](docs/decisiones-y-plan.md). Las decisiones de arquitectura se registran en [`docs/adr/`](docs/adr/).
 
@@ -65,6 +65,8 @@ docs/        Decisiones, plan y ADRs
 ```
 
 ## Módulos de IA y demo de memoria
+
+El [resumen de avances de IA](docs/avances-ia-2026-11-15.pdf) explica lo implementado y los comandos para comprobarlo, con referencia a las ramas correspondientes.
 
 `ai/` contiene el test diagnóstico de inglés, los prompts, el proveedor de embeddings y la recuperación de memorias por alumno. La [guía de memoria](ai/memory/README.md) incluye el contrato del servicio y una demo local con Chroma real y vectores simulados.
 
