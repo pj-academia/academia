@@ -52,6 +52,8 @@ Los hooks formatean y lintean antes de cada commit y validan que el mensaje siga
 | Backend · lint y formato | `backend/` → `uv run ruff check . && uv run ruff format .` |
 | Backend · tipos (domain/application) | `backend/` → `uv run mypy` |
 | Backend · arquitectura | `backend/` → `uv run lint-imports` |
+| IA · pruebas unitarias e integración Chroma | raíz → `.\.venv\Scripts\python.exe -m unittest discover -s ai -t . -v` |
+| IA · demo local de memoria | raíz → `.\.venv\Scripts\python.exe -m ai.memory.demo` |
 | Frontend · tests | `frontend/` → `pnpm test` |
 | Frontend · lint, tipos y formato | `frontend/` → `pnpm lint && pnpm typecheck && pnpm format` |
 
@@ -60,15 +62,15 @@ Los hooks formatean y lintean antes de cada commit y validan que el mensaje siga
 ```
 backend/     API FastAPI organizada por módulos de dominio (hexagonal en memory y chat)
 frontend/    Next.js organizado por features (container/presentational)
+ai/          Test de nivel, embeddings, memoria, tutor y registros de evaluación
+evaluation/  Casos sintéticos y diseño de la comparación con/sin memoria
 infra/       Configuración de Prometheus y Grafana
 docs/        Decisiones, plan y ADRs
 ```
 
 ## Módulos de IA y demo de memoria
 
-El [resumen de avances de IA](docs/avances-ia-2026-11-15.pdf) explica lo implementado y los comandos para comprobarlo, con referencia a las ramas correspondientes.
-
-`ai/` contiene el test diagnóstico de inglés, los prompts, el proveedor de embeddings y la recuperación de memorias por alumno. La [guía de memoria](ai/memory/README.md) incluye el contrato del servicio y una demo local con Chroma real y vectores simulados.
+`ai/` contiene el test diagnóstico de inglés, los prompts, el proveedor de embeddings, la recuperación de memorias, la preparación de turnos del tutor y el registro de evaluación. La [guía de memoria](ai/memory/README.md) incluye el contrato del servicio y una demo local con Chroma real y vectores simulados; la [guía del tutor](ai/tutor/README.md) documenta la petición y respuesta de OpenAI mediante clientes simulados.
 
 Desde la raíz, en un entorno separado del backend:
 
