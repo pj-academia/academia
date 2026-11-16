@@ -1,6 +1,6 @@
 # Academia IA
 
-Tutor de tecnología basado en IA generativa que recuerda las dificultades y preferencias de cada alumno entre sesiones para adaptar sus explicaciones. Proyecto Júpiter (TFM) del Máster en IA, Cloud Computing y DevOps.
+Tutor de inglés basado en IA generativa para estudiantes hispanohablantes. Recuerda dificultades, preferencias y progreso educativo entre sesiones para adaptar sus explicaciones. Proyecto Júpiter (TFM) del Máster en IA, Cloud Computing y DevOps.
 
 > Las decisiones técnicas y su justificación están en [`docs/decisiones-y-plan.md`](docs/decisiones-y-plan.md). Las decisiones de arquitectura se registran en [`docs/adr/`](docs/adr/).
 
@@ -52,6 +52,8 @@ Los hooks formatean y lintean antes de cada commit y validan que el mensaje siga
 | Backend · lint y formato | `backend/` → `uv run ruff check . && uv run ruff format .` |
 | Backend · tipos (domain/application) | `backend/` → `uv run mypy` |
 | Backend · arquitectura | `backend/` → `uv run lint-imports` |
+| IA · pruebas unitarias e integración Chroma | raíz → `.\.venv\Scripts\python.exe -m unittest discover -s ai -t . -v` |
+| IA · demo local de memoria | raíz → `.\.venv\Scripts\python.exe -m ai.memory.demo` |
 | Frontend · tests | `frontend/` → `pnpm test` |
 | Frontend · lint, tipos y formato | `frontend/` → `pnpm lint && pnpm typecheck && pnpm format` |
 
@@ -60,13 +62,15 @@ Los hooks formatean y lintean antes de cada commit y validan que el mensaje siga
 ```
 backend/     API FastAPI organizada por módulos de dominio (hexagonal en memory y chat)
 frontend/    Next.js organizado por features (container/presentational)
+ai/          Test de nivel, embeddings, memoria, tutor y registros de evaluación
+evaluation/  Casos sintéticos y diseño de la comparación con/sin memoria
 infra/       Configuración de Prometheus y Grafana
 docs/        Decisiones, plan y ADRs
 ```
 
 ## Módulos de IA y demo de memoria
 
-`ai/` contiene el test diagnóstico de inglés, los prompts, el proveedor de embeddings y la recuperación de memorias por alumno. La [guía de memoria](ai/memory/README.md) incluye el contrato del servicio y una demo local con Chroma real y vectores simulados.
+`ai/` contiene el test diagnóstico de inglés, los prompts, el proveedor de embeddings, la recuperación de memorias, la preparación de turnos del tutor y el registro de evaluación. La [guía de memoria](ai/memory/README.md) incluye el contrato del servicio y una demo local con Chroma real y vectores simulados; la [guía del tutor](ai/tutor/README.md) documenta la petición y respuesta de OpenAI mediante clientes simulados.
 
 Desde la raíz, en un entorno separado del backend:
 
@@ -77,7 +81,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m ai.memory.demo
 ```
 
-La demo no necesita API key. Los módulos se mantienen independientes en `ai/`; su conexión a las capas hexagonales de `backend/app/memory/`, PostgreSQL y los endpoints se realizará en una tarea posterior siguiendo el ADR 0001. Las pruebas de IA se ejecutan con el comando anterior; el CI actual cubre los componentes del scaffold.
+La demo y las pruebas no necesitan API key ni consumen créditos. Los módulos se mantienen independientes en `ai/`; su conexión a las capas hexagonales del backend, PostgreSQL y los endpoints se realizará en una tarea posterior siguiendo el ADR 0001. El CI ejecuta las pruebas de IA con Python 3.12 y `chromadb==1.5.9`, además de las comprobaciones del backend, frontend y Docker.
 
 ## Flujo de trabajo
 
