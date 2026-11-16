@@ -37,6 +37,22 @@ store.delete_memory("memory-1", user_id=authenticated_user_id)
 
 El backend debe obtener `authenticated_user_id` de la sesión, comprobar la propiedad en PostgreSQL y conservar allí fuente, fechas y confianza. Tras un borrado registrará la fuente bloqueada para evitar recrear automáticamente la memoria desde el mismo mensaje. Esa coordinación con PostgreSQL queda pendiente de la integración de Peio; el adaptador solo modifica el índice vectorial.
 
+## Extracción y validación
+
+`extraction.py` valida las propuestas generadas con `memory-extraction-v2`. Admite `create`, `update` y `discard`, exige confianza mínima de 0.70 y rechaza campos desconocidos, tipos inválidos, IDs de actualización inexistentes y cambios de tipo. Una creación idéntica a una memoria activa se convierte en actualización para evitar duplicados.
+
+El servicio recibe únicamente memorias activas ya autorizadas por el backend. Si PostgreSQL indica que el mensaje de origen está bloqueado después de un borrado, devuelve `discard` sin llamar al modelo. Este módulo no persiste datos y sus pruebas utilizan un generador simulado.
+
+`extraction-evaluation-cases-v1.json` aporta ocho casos sintéticos y sin datos personales para medir acciones, tipos, destino y términos esenciales. `extraction_evaluation.py` separa `action_accuracy` de `field_term_accuracy`: esta última solo mide coincidencias de campos y palabras clave, no fidelidad del recuerdo. Un texto que contradice al alumno puede contener las mismas palabras y necesita revisión de significado.
+
+Cada creación o actualización queda en `pending_content_review` hasta que un revisor comprueba la decisión generada. El argumento opcional `content_reviewer(case, decision)` devuelve `True` para aceptar su fidelidad, `False` para rechazarla o `None` para dejarla pendiente. El informe separa `accepted_content_reviews`, `rejected_content_reviews` y fallos por caso. Un error del revisor deja el caso pendiente y no interrumpe los demás. Las pruebas con respuestas simuladas comprueban esta mecánica; no acreditan la calidad de ningún modelo.
+
+El cargador exige que las etiquetas de actualización apunten a un ID de texto existente del mismo tipo de memoria. El evaluador podrá ejecutarse posteriormente con el adaptador real de OpenAI y revisión del contenido.
+
+`openai_extractor.py` implementa ese adaptador mediante Responses API y salida estructurada con JSON Schema estricto. Envía las memorias autorizadas como datos no confiables, desactiva `store` y deja la validación y decisión final en `MemoryExtractionService`. El modelo se configurará con `OPENAI_MEMORY_MODEL`; la clave queda exclusivamente en `OPENAI_API_KEY`, leída por el SDK oficial.
+
+El prompt ejecutable y el documento v2 se comparan en una prueba de paridad. El esquema limita la forma de la respuesta; el servidor comprueba además las relaciones entre acción y campos, los límites y el destino autorizado. Por ejemplo, `discard` exige que los seis campos educativos sean `null` y siempre conserva una justificación no vacía.
+
 Cada colección debe usar un único modelo y dimensión de embeddings. Si se cambia el modelo, se crea otra colección y se reindexa; no deben mezclarse vectores de modelos distintos aunque tengan igual dimensión. La búsqueda de Chroma es aproximada: el umbral y los resultados se calibrarán con el conjunto de evaluación.
 
 ## Verificación
@@ -88,3 +104,21 @@ Desde la terminal integrada de VS Code, con las dependencias opcionales instalad
 ```
 
 La demo guarda ejemplos de dos alumnos, abre otra instancia del servicio, consulta la dificultad del primero, la borra y vuelve a consultar. La memoria del segundo se conserva. Chroma funciona realmente en memoria; el proveedor utiliza vectores fijos y solo admite los textos de ejemplo. Esto permite comprobar el recorrido y el aislamiento sin API key. No evalúa la calidad semántica de OpenAI ni la personalización del tutor. Los datos desaparecen al terminar la ejecución.
+
+### Demo de extracción sin dependencias externas
+
+Para mostrar al equipo las reglas de creación y actualización desde la raíz del repositorio:
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m ai.memory.extraction_demo
+```
+
+Recorre siete escenarios con propuestas guionizadas: crear una dificultad, repetirla sin duplicarla, crear una preferencia, cambiarla, descartar un saludo, rechazar una confianza insuficiente y descartar una fuente bloqueada después de un borrado simulado. Utiliza el adaptador de extracción y el validador reales con un cliente local. El estado y la señal de bloqueo son simulados; PostgreSQL, autorización y coordinación de borrados siguen pendientes del backend.
+
+La salida muestra el número de memorias y las llamadas simuladas por paso. Termina con una sola preferencia actualizada; el último paso no llama al generador. Todas las propuestas y datos son sintéticos y desaparecen al terminar. La demo funciona con la biblioteca estándar de Python, sin instalar OpenAI ni Chroma, y no mide la calidad del modelo.
+
+El mismo recorrido se puede consultar como JSON, con las decisiones y el estado de cada paso:
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m ai.memory.extraction_demo --json
+```
